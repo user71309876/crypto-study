@@ -5,7 +5,6 @@
 #include <ctype.h>
 #include "caesar.h"
 
-/* Shift a single character by key */
 static char shift_char(char c, int key)
 {
     key = key % 26;
