@@ -1,0 +1,36 @@
+# Runs the tests on GitHub every time you push.
+# Each step (01, 02, 03, ...) runs as its own job, so you can see
+# which steps pass and which are still in progress.
+name: tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:      # adds a "Run workflow" button in the Actions tab
+
+jobs:
+  find-steps:
+    runs-on: ubuntu-latest
+    outputs:
+      steps: ${{ steps.list.outputs.steps }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: list
+        name: Find step folders (01_xxx, 02_xxx, ...)
+        run: |
+          steps=$(ls -d [0-9][0-9]_*/ | cut -c1-2 | jq -R . | jq -sc .)
+          echo "Found: $steps"
+          echo "steps=$steps" >> "$GITHUB_OUTPUT"
+
+  test:
+    needs: find-steps
+    name: step ${{ matrix.step }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false    # keep testing other steps even if one fails
+      matrix:
+        step: ${{ fromJson(needs.find-steps.outputs.steps) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and test with sanitizers
+        run: make test-${{ matrix.step }} SAN=1
