@@ -1,15 +1,15 @@
-![tests](https://github.com/내아이디/crypto-study/actions/workflows/test.yml/badge.svg)
+![tests](https://github.com/user71309876/crypto-study/actions/workflows/test.yml/badge.svg)
 
 # Learning Cryptographic Algorithms in C
 
 Each step folder contains the following:
 
-| File        | Contents                                                 | Edit it?           |
-| ----------- | -------------------------------------------------------- | ------------------ |
-| `README.md` | How the algorithm works, security concepts, requirements | Read               |
-| `*.h`       | Function interface (rules described in comments)         | Do not modify      |
-| `*.c`       | Empty function stubs                                     | **Implement here** |
-| `test_*.c`  | Tests                                                    | Do not modify      |
+| File | Contents | Edit it? |
+|---|---|---|
+| `README.md` | How the algorithm works, security concepts, requirements | Read |
+| `*.h` | Function interface (rules described in comments) | Do not modify |
+| `*.c` | Empty function stubs | **Implement here** |
+| `test_*.c` | Tests | Do not modify |
 
 ## How to proceed
 
@@ -24,24 +24,27 @@ Each step folder contains the following:
 ```bash
 make test       # test every step
 make test-01    # Step 1 only
-make test-02    # Step 2 only
+make test-02    # Step 2 only (same pattern for every step: test-03, test-04, ...)
 make clean      # delete build output
 ```
+
+The Makefile finds every folder named `NN_name` automatically and builds all `.c` files in it.
+Keep only the step's own files in a step folder (put scratch files like `play.c` elsewhere).
 
 Works with gcc and make on Linux, macOS, and WSL.
 (On macOS it's fine even if `gcc` points to clang.)
 
 ## Roadmap
 
-| Step | Algorithm                        | Key concepts                                    | Status |
-| ---- | -------------------------------- | ----------------------------------------------- | ------ |
-| 1    | Caesar cipher                    | Substitution, key space, brute force            | Ready  |
-| 2    | Vigenere cipher                  | Polyalphabetic substitution, frequency analysis | Ready  |
-| 3    | XOR / one-time pad               | Bitwise operations, danger of key reuse         |        |
-| 4    | Mini block cipher                | Rounds, confusion and diffusion                 |        |
-| 5    | AES-128                          | S-box, key expansion, standard test vectors     |        |
-| 6    | Modes of operation (ECB/CBC/CTR) | IV, padding                                     |        |
-| 7    | SHA-256                          | Hashing, integrity                              |        |
-| 8    | RSA (small numbers)              | Public key, modular exponentiation              |        |
+| Step | Algorithm | Key concepts | Status |
+|---|---|---|---|
+| 1 | Caesar cipher | Substitution, key space, brute force | Ready |
+| 2 | Vigenere cipher | Polyalphabetic substitution, frequency analysis | Ready |
+| 3 | XOR / one-time pad | Bitwise operations, danger of key reuse | Ready |
+| 4 | Mini block cipher | Rounds, confusion and diffusion | |
+| 5 | AES-128 | S-box, key expansion, standard test vectors | |
+| 6 | Modes of operation (ECB/CBC/CTR) | IV, padding | |
+| 7 | SHA-256 | Hashing, integrity | |
+| 8 | RSA (small numbers) | Public key, modular exponentiation | |
 
 The implementations here are for learning. Use proven libraries such as OpenSSL or libsodium in real products.

@@ -16,7 +16,7 @@ int main(void)
     CHECK_STR(buf, "LXFOPVEFRNHR");
 
     TEST_SECTION("Key of length 1 = Caesar cipher");
-    CHECK_INT(vigenere_encrypt("XYZ", buf, sizeof buf, "D"), CRYPTO_OK); /* D = 3 */
+    CHECK_INT(vigenere_encrypt("XYZ", buf, sizeof buf, "D"), CRYPTO_OK);   /* D = 3 */
     CHECK_STR(buf, "ABC");
     CHECK_INT(vigenere_encrypt("Hello", buf, sizeof buf, "A"), CRYPTO_OK); /* A = 0 */
     CHECK_STR(buf, "Hello");
@@ -45,15 +45,13 @@ int main(void)
 
     TEST_SECTION("Encrypt -> decrypt round trip");
     {
-        const char *msg = "The Quick Brown Fox Jumps Over The Lazy Dog, 1234!";
-        const char *keys[] = {"A", "Z", "KEY", "Crypto", "VERYLONGKEYWORDTHATISLONGERTHANTHEMESSAGEITSELF"};
+        const char *msg  = "The Quick Brown Fox Jumps Over The Lazy Dog, 1234!";
+        const char *keys[] = { "A", "Z", "KEY", "Crypto", "VERYLONGKEYWORDTHATISLONGERTHANTHEMESSAGEITSELF" };
         int all_ok = 1;
-        for (size_t i = 0; i < sizeof keys / sizeof keys[0]; i++)
-        {
+        for (size_t i = 0; i < sizeof keys / sizeof keys[0]; i++) {
             if (vigenere_encrypt(msg, buf, sizeof buf, keys[i]) != CRYPTO_OK ||
                 vigenere_decrypt(buf, buf2, sizeof buf2, keys[i]) != CRYPTO_OK ||
-                strcmp(msg, buf2) != 0)
-            {
+                strcmp(msg, buf2) != 0) {
                 all_ok = 0;
                 printf("  round trip failed at key=\"%s\"\n", keys[i]);
             }
@@ -84,7 +82,7 @@ int main(void)
 
     TEST_SECTION("Error priority: key error comes before buffer error");
     CHECK_INT(vigenere_encrypt("abc", buf, 1, ""), CRYPTO_ERR_KEY);
-    CHECK_INT(vigenere_encrypt("abc", buf, 1, "KEY1"), CRYPTO_ERR_KEY); /* bad letter, tiny buffer */
+    CHECK_INT(vigenere_encrypt("abc", buf, 1, "KEY1"), CRYPTO_ERR_KEY);   /* bad letter, tiny buffer */
     CHECK_INT(vigenere_encrypt("abc", buf, 0, "MY KEY"), CRYPTO_ERR_KEY);
     CHECK_INT(vigenere_decrypt("abc", buf, 1, "KEY1"), CRYPTO_ERR_KEY);
 
