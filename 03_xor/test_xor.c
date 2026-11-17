@@ -122,10 +122,11 @@ int main(void)
     TEST_SECTION("Key shorter than the message is rejected");
     {
         const uint8_t in[]  = { 1, 2, 3, 4 };
-        const uint8_t key[] = { 9, 9, 9 };
-        CHECK_INT(otp_encrypt(in, 4, buf, sizeof buf, key, 3), CRYPTO_ERR_KEY);
-        CHECK_INT(otp_encrypt(in, 4, buf, 1, key, 3), CRYPTO_ERR_KEY);    /* key before buffer */
-        CHECK_INT(otp_encrypt(in, 4, buf, 3, key, 4), CRYPTO_ERR_BUFFER);
+        const uint8_t key[]  = { 9, 9, 9 };       /* 3 bytes: too short */
+        const uint8_t key4[] = { 9, 9, 9, 9 };    /* 4 bytes: long enough */
+        CHECK_INT(otp_encrypt(in, 4, buf, sizeof buf, key, sizeof key), CRYPTO_ERR_KEY);
+        CHECK_INT(otp_encrypt(in, 4, buf, 1, key, sizeof key), CRYPTO_ERR_KEY);    /* key before buffer */
+        CHECK_INT(otp_encrypt(in, 4, buf, 3, key4, sizeof key4), CRYPTO_ERR_BUFFER);
         CHECK_INT(otp_encrypt(NULL, 4, buf, sizeof buf, key, 3), CRYPTO_ERR_NULL);
     }
 
