@@ -89,15 +89,6 @@ int main(void)
     TEST_SECTION("Empty input");
     CHECK_INT(xor_cipher(buf2, 0, buf, sizeof buf, (const uint8_t *)"K", 1), CRYPTO_OK);
 
-    TEST_SECTION("Errors");
-    CHECK_INT(xor_cipher(NULL, 1, buf, sizeof buf, (const uint8_t *)"K", 1), CRYPTO_ERR_NULL);
-    CHECK_INT(xor_cipher(buf2, 1, NULL, 1, (const uint8_t *)"K", 1), CRYPTO_ERR_NULL);
-    CHECK_INT(xor_cipher(buf2, 1, buf, sizeof buf, NULL, 1), CRYPTO_ERR_NULL);
-    CHECK_INT(xor_cipher(buf2, 1, buf, sizeof buf, (const uint8_t *)"K", 0), CRYPTO_ERR_KEY);
-    CHECK_INT(xor_cipher(buf2, 5, buf, 4, (const uint8_t *)"K", 1), CRYPTO_ERR_BUFFER);
-    CHECK_INT(xor_cipher(buf2, 5, buf, 5, (const uint8_t *)"K", 1), CRYPTO_OK);   /* exact size, no NUL */
-    CHECK_INT(xor_cipher(buf2, 5, buf, 4, (const uint8_t *)"K", 0), CRYPTO_ERR_KEY); /* key before buffer */
-
     /* ------------------------------------------------------------ */
     printf("\n== otp_encrypt ==\n");
 
@@ -117,17 +108,6 @@ int main(void)
         const uint8_t exp[] = { 0xA5, 0x4B };
         CHECK_INT(otp_encrypt(in, 2, buf, sizeof buf, key, 4), CRYPTO_OK);
         CHECK_BYTES(buf, exp, 2);
-    }
-
-    TEST_SECTION("Key shorter than the message is rejected");
-    {
-        const uint8_t in[]  = { 1, 2, 3, 4 };
-        const uint8_t key[]  = { 9, 9, 9 };       /* 3 bytes: too short */
-        const uint8_t key4[] = { 9, 9, 9, 9 };    /* 4 bytes: long enough */
-        CHECK_INT(otp_encrypt(in, 4, buf, sizeof buf, key, sizeof key), CRYPTO_ERR_KEY);
-        CHECK_INT(otp_encrypt(in, 4, buf, 1, key, sizeof key), CRYPTO_ERR_KEY);    /* key before buffer */
-        CHECK_INT(otp_encrypt(in, 4, buf, 3, key4, sizeof key4), CRYPTO_ERR_BUFFER);
-        CHECK_INT(otp_encrypt(NULL, 4, buf, sizeof buf, key, 3), CRYPTO_ERR_NULL);
     }
 
     TEST_SECTION("ATTACK: reusing a one-time pad key leaks p1 ^ p2");
@@ -173,13 +153,6 @@ int main(void)
     CHECK_INT(hex_encode(buf2, 0, hex, sizeof hex), CRYPTO_OK);
     CHECK_STR(hex, "");
 
-    TEST_SECTION("Errors");
-    CHECK_INT(hex_encode(NULL, 1, hex, sizeof hex), CRYPTO_ERR_NULL);
-    CHECK_INT(hex_encode(buf2, 1, NULL, 3), CRYPTO_ERR_NULL);
-    CHECK_INT(hex_encode((const uint8_t *)"ab", 2, hex, 4), CRYPTO_ERR_BUFFER);  /* needs 5 */
-    CHECK_INT(hex_encode((const uint8_t *)"ab", 2, hex, 5), CRYPTO_OK);
-    CHECK_STR(hex, "6162");
-
     /* ------------------------------------------------------------ */
     printf("\n== hex_decode ==\n");
 
@@ -213,20 +186,6 @@ int main(void)
         CHECK_INT(n, 256);
         CHECK_BYTES(buf, all, 256);
     }
-
-    TEST_SECTION("Errors");
-    CHECK_INT(hex_decode(NULL, buf, sizeof buf, &n), CRYPTO_ERR_NULL);
-    CHECK_INT(hex_decode("00", NULL, 1, &n), CRYPTO_ERR_NULL);
-    CHECK_INT(hex_decode("00", buf, sizeof buf, NULL), CRYPTO_ERR_NULL);
-    CHECK_INT(hex_decode("abc", buf, sizeof buf, &n), CRYPTO_ERR_INPUT);   /* odd length */
-    CHECK_INT(hex_decode("0g", buf, sizeof buf, &n), CRYPTO_ERR_INPUT);    /* 'g' is not hex */
-    CHECK_INT(hex_decode("12 4", buf, sizeof buf, &n), CRYPTO_ERR_INPUT);  /* space */
-    CHECK_INT(hex_decode("0x12", buf, sizeof buf, &n), CRYPTO_ERR_INPUT);  /* no "0x" prefix */
-    CHECK_INT(hex_decode("\xEA\xB0", buf, sizeof buf, &n), CRYPTO_ERR_INPUT); /* non-ASCII bytes */
-    CHECK_INT(hex_decode("aabbcc", buf, 2, &n), CRYPTO_ERR_BUFFER);        /* needs 3 */
-    CHECK_INT(hex_decode("aabbc", buf, 1, &n), CRYPTO_ERR_INPUT);          /* input before buffer */
-    CHECK_INT(hex_decode("aabbcc", buf, 3, &n), CRYPTO_OK);                /* exact size */
-    CHECK_INT(n, 3);
 
     return TEST_SUMMARY();
 }

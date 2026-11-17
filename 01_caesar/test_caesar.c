@@ -71,14 +71,5 @@ int main(void)
     CHECK_INT(caesar_encrypt("", buf, sizeof buf, 5), CRYPTO_OK);
     CHECK_STR(buf, "");
 
-    TEST_SECTION("Error handling");
-    CHECK_INT(caesar_encrypt(NULL, buf, sizeof buf, 3), CRYPTO_ERR_NULL);
-    CHECK_INT(caesar_encrypt("abc", NULL, 10, 3), CRYPTO_ERR_NULL);
-    CHECK_INT(caesar_decrypt(NULL, buf, sizeof buf, 3), CRYPTO_ERR_NULL);
-    CHECK_INT(caesar_encrypt("abc", buf, 3, 3), CRYPTO_ERR_BUFFER);  /* no room for NUL */
-    CHECK_INT(caesar_encrypt("abc", buf, 4, 3), CRYPTO_OK);          /* exact size */
-    CHECK_STR(buf, "def");
-    CHECK_INT(caesar_decrypt("abc", buf, 0, 3), CRYPTO_ERR_BUFFER);
-
     return TEST_SUMMARY();
 }

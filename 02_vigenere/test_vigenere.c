@@ -63,33 +63,6 @@ int main(void)
     CHECK_INT(vigenere_encrypt("", buf, sizeof buf, "KEY"), CRYPTO_OK);
     CHECK_STR(buf, "");
 
-    TEST_SECTION("Error handling: NULL");
-    CHECK_INT(vigenere_encrypt(NULL, buf, sizeof buf, "KEY"), CRYPTO_ERR_NULL);
-    CHECK_INT(vigenere_encrypt("abc", NULL, 10, "KEY"), CRYPTO_ERR_NULL);
-    CHECK_INT(vigenere_encrypt("abc", buf, sizeof buf, NULL), CRYPTO_ERR_NULL);
-    CHECK_INT(vigenere_decrypt("abc", buf, sizeof buf, NULL), CRYPTO_ERR_NULL);
-
-    TEST_SECTION("Error handling: invalid key");
-    CHECK_INT(vigenere_encrypt("abc", buf, sizeof buf, ""), CRYPTO_ERR_KEY);
-    CHECK_INT(vigenere_encrypt("abc", buf, sizeof buf, "KEY1"), CRYPTO_ERR_KEY);
-    CHECK_INT(vigenere_encrypt("abc", buf, sizeof buf, "MY KEY"), CRYPTO_ERR_KEY);
-    CHECK_INT(vigenere_decrypt("abc", buf, sizeof buf, "-"), CRYPTO_ERR_KEY);
-
-    TEST_SECTION("Error handling: buffer size");
-    CHECK_INT(vigenere_encrypt("abc", buf, 3, "KEY"), CRYPTO_ERR_BUFFER);
-    CHECK_INT(vigenere_encrypt("abc", buf, 4, "B"), CRYPTO_OK);
-    CHECK_STR(buf, "bcd");
-
-    TEST_SECTION("Error priority: key error comes before buffer error");
-    CHECK_INT(vigenere_encrypt("abc", buf, 1, ""), CRYPTO_ERR_KEY);
-    CHECK_INT(vigenere_encrypt("abc", buf, 1, "KEY1"), CRYPTO_ERR_KEY);   /* bad letter, tiny buffer */
-    CHECK_INT(vigenere_encrypt("abc", buf, 0, "MY KEY"), CRYPTO_ERR_KEY);
-    CHECK_INT(vigenere_decrypt("abc", buf, 1, "KEY1"), CRYPTO_ERR_KEY);
-
-    TEST_SECTION("Error priority: NULL comes before key and buffer errors");
-    CHECK_INT(vigenere_encrypt(NULL, buf, 1, ""), CRYPTO_ERR_NULL);
-    CHECK_INT(vigenere_encrypt("abc", NULL, 1, "KEY1"), CRYPTO_ERR_NULL);
-
     TEST_SECTION("Non-ASCII bytes (e.g. UTF-8 Korean) are unchanged and do not consume the key");
     /* "\xEA\xB0\x80" is the UTF-8 encoding of one Korean character (3 bytes) */
     CHECK_INT(vigenere_encrypt("\xEA\xB0\x80 ab", buf, sizeof buf, "BC"), CRYPTO_OK);

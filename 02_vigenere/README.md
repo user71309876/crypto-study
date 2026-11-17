@@ -76,8 +76,6 @@ The interface is described in the comments in `vigenere.h`. What the tests check
 | Plaintext case | Preserved |
 | Non-letters | Left unchanged and do not consume the key |
 | Long key | Works with a key longer than the plaintext |
-| Errors | NULL, empty key, key with non-letters, buffer too small |
-| Error order | Check NULL -> key -> buffer, in that order |
 
 ## Running
 
@@ -89,9 +87,7 @@ make test-02 SAN=1
 ## Pitfalls to think about
 
 1. Should the key index and the plaintext index be the same variable or separate ones?
-2. When should you validate the key? If you validate while converting, a half-written result is
-   left in `out` on error. Is that OK?
-3. Can you build decryption by reusing the encrypt function? Unlike Caesar, the key is a string,
+2. Can you build decryption by reusing the encrypt function? Unlike Caesar, the key is a string,
    so `-key` does not work.
 
 ## When you are done (optional)

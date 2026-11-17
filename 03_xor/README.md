@@ -78,7 +78,8 @@ every plaintext of the same length is equally possible, because there is a key t
 one. This is called **perfect secrecy**, proven by Claude Shannon in 1949. It is the only cipher
 that is mathematically unbreakable, no matter how much computing power the attacker has.
 
-`otp_encrypt` is `xor_cipher` with one extra rule: reject a key shorter than the message.
+`otp_encrypt` is `xor_cipher` with one extra condition: the key is at least as long as the message,
+so it never repeats.
 
 ### Why nobody uses it in practice
 
@@ -122,7 +123,7 @@ One byte = 8 bits = two 4-bit halves (called **nibbles**). Each nibble is 0..15 
 - Combining two nibbles back into a byte: shift left (`<<`) and OR (`|`)
 - Digit to character: you need a mapping 0..15 -> '0'..'9','a'..'f'. Think about how
   `"0123456789abcdef"` could help.
-- Character to digit: three ranges ('0'-'9', 'a'-'f', 'A'-'F'), anything else is invalid.
+- Character to digit: three ranges ('0'-'9', 'a'-'f', 'A'-'F').
 
 ## Implementation requirements
 
@@ -130,10 +131,10 @@ The interface is in `xor_cipher.h`. What the tests check:
 
 | Function | Checks |
 |---|---|
-| `xor_cipher` | Truth table, key 0x00/0xFF, x^x=0, known "ICE" test vector, 0x00 inside data, in-place (out == in), errors |
-| `otp_encrypt` | Exact-length key, longer key, shorter key rejected, **key reuse attack demo** |
-| `hex_encode` | Lowercase output, all byte values, NUL-terminated, buffer needs 2n+1 |
-| `hex_decode` | Upper and lowercase, round trip of all 256 bytes, odd length / invalid chars / "0x" rejected |
+| `xor_cipher` | Truth table, key 0x00/0xFF, x^x=0, known "ICE" test vector, 0x00 inside data, in-place (out == in) |
+| `otp_encrypt` | Exact-length key, longer key, **key reuse attack demo** |
+| `hex_encode` | Lowercase output, all byte values, NUL-terminated |
+| `hex_decode` | Upper and lowercase, round trip of all 256 bytes |
 
 ## Running
 
@@ -148,10 +149,9 @@ The test output is split into sections by function, so you can focus on one at a
 ## Pitfalls to think about
 
 1. Why `uint8_t` and not `char`? What happens if you XOR two `char`s that are negative?
-2. `out_size < in_len`: why is there no `+ 1` this time, when Steps 1 and 2 had one?
+2. Steps 1 and 2 put a `'\0'` at the end of `out`. Why does `xor_cipher` not do that?
 3. In-place (`out == in`): does your loop read `in[i]` before writing `out[i]`? Is it safe?
 4. `otp_encrypt` is almost the same as `xor_cipher`. Can you avoid copying the code?
-5. `hex_decode`: what should `"0x12"` give? Why is it treated as invalid?
 
 ## When you are done (optional)
 

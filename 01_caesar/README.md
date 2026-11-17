@@ -52,7 +52,6 @@ The interface is described in the comments in `caesar.h`. What the tests check:
 | Non-letters | Spaces, digits, symbols unchanged |
 | Key range | 0, 26, 29, -1, -27 all work correctly |
 | Round trip | For every key from -30 to 30, encrypt -> decrypt = original |
-| Errors | NULL pointers and too-small buffers reported via return value |
 
 ## Running
 
@@ -67,7 +66,7 @@ Common traps when implementing this in C. Check them yourself.
 
 1. What is the result of `-1 % 26` in C? Print it with `printf`.
 2. What happens if you store `'z' + 3` in a `char`? What is the range of `char`?
-3. When checking the buffer size, did you count the `'\0'` at the end of the string?
+3. Did you put a `'\0'` at the end of `out`? What happens if you forget it?
 
 ## When you are done (optional)
 
