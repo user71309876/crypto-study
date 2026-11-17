@@ -41,7 +41,7 @@ Works with gcc and make on Linux, macOS, and WSL.
 | 1 | Caesar cipher | Substitution, key space, brute force | Ready |
 | 2 | Vigenere cipher | Polyalphabetic substitution, frequency analysis | Ready |
 | 3 | XOR / one-time pad | Bitwise operations, danger of key reuse | Ready |
-| 4 | Mini block cipher | Rounds, confusion and diffusion | |
+| 4 | Mini block cipher (16-bit SPN) | S-box, permutation, rounds, confusion and diffusion | Ready |
 | 5 | AES-128 | S-box, key expansion, standard test vectors | |
 | 6 | Modes of operation (ECB/CBC/CTR) | IV, padding | |
 | 7 | SHA-256 | Hashing, integrity | |
