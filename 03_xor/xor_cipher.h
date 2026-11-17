@@ -23,14 +23,13 @@
  * Encryption and decryption are the SAME operation (XOR twice = original).
  *
  *   in, in_len   : input bytes and their count
- *   out          : output buffer. out may be the same pointer as in (in-place).
- *   out_size     : size of out in bytes
+ *   out          : output buffer (in_len bytes). out may be the same pointer as in (in-place).
  *   key, key_len : key bytes and their count
  *
  * No '\0' is added: out is bytes, not a string.
  */
 int xor_cipher(const uint8_t *in, size_t in_len,
-               uint8_t *out, size_t out_size,
+               uint8_t *out,
                const uint8_t *key, size_t key_len);
 
 /*
@@ -39,7 +38,7 @@ int xor_cipher(const uint8_t *in, size_t in_len,
  * so the key never repeats. Only the first in_len bytes of the key are used.
  */
 int otp_encrypt(const uint8_t *in, size_t in_len,
-                uint8_t *out, size_t out_size,
+                uint8_t *out,
                 const uint8_t *key, size_t key_len);
 
 /*
@@ -47,7 +46,7 @@ int otp_encrypt(const uint8_t *in, size_t in_len,
  * Each byte becomes two LOWERCASE hex characters: {0x0b, 0xff} -> "0bff".
  * The result is NUL-terminated (2 * in_len characters + '\0').
  */
-int hex_encode(const uint8_t *in, size_t in_len, char *out, size_t out_size);
+int hex_encode(const uint8_t *in, size_t in_len, char *out);
 
 /*
  * Hex string -> bytes.
@@ -55,9 +54,8 @@ int hex_encode(const uint8_t *in, size_t in_len, char *out, size_t out_size);
  *
  *   in       : NUL-terminated hex string (always valid, even length in the tests)
  *   out      : output byte buffer
- *   out_size : size of out in bytes
  *   out_len  : receives the number of bytes written (strlen(in) / 2)
  */
-int hex_decode(const char *in, uint8_t *out, size_t out_size, size_t *out_len);
+int hex_decode(const char *in, uint8_t *out, size_t *out_len);
 
 #endif /* XOR_CIPHER_H */

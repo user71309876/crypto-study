@@ -12,7 +12,6 @@
  *
  *   in       : NUL-terminated plaintext string
  *   out      : result buffer (the tests always pass one that is big enough)
- *   out_size : size of the out buffer in bytes
  *   key      : keyword made of letters only (case-insensitive: "LEMON" == "lemon")
  *              'A'/'a' shifts by 0, 'B'/'b' by 1, ... 'Z'/'z' by 25
  *
@@ -26,12 +25,12 @@
  * Returns CRYPTO_OK.
  * (Error handling is optional: the tests only check correct results.)
  */
-int vigenere_encrypt(const char *in, char *out, size_t out_size, const char *key);
+int vigenere_encrypt(const char *in, char *out, const char *key);
 
 /*
  * Decrypt the ciphertext `in` with `key` and write it to `out`.
  * Same rules as vigenere_encrypt.
  */
-int vigenere_decrypt(const char *in, char *out, size_t out_size, const char *key);
+int vigenere_decrypt(const char *in, char *out, const char *key);
 
 #endif /* VIGENERE_H */

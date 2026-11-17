@@ -18,10 +18,8 @@ static char shift_char(char c, int key)
     return c;
 }
 
-int caesar_encrypt(const char *in, char *out, size_t out_size, int key)
+int caesar_encrypt(const char *in, char *out, int key)
 {
-    (void)out_size; /* not used: error handling is optional */
-
     size_t len = strlen(in);
 
     for (size_t i = 0; i < len; i++)
@@ -32,7 +30,7 @@ int caesar_encrypt(const char *in, char *out, size_t out_size, int key)
     return CRYPTO_OK;
 }
 
-int caesar_decrypt(const char *in, char *out, size_t out_size, int key)
+int caesar_decrypt(const char *in, char *out, int key)
 {
-    return caesar_encrypt(in, out, out_size, -key);
+    return caesar_encrypt(in, out, -key);
 }

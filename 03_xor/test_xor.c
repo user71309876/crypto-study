@@ -27,7 +27,7 @@ int main(void)
         const uint8_t in[]  = { 0x0F };            /* 0000 1111 */
         const uint8_t key[] = { 0x55 };            /* 0101 0101 */
         const uint8_t exp[] = { 0x5A };            /* 0101 1010 */
-        CHECK_INT(xor_cipher(in, 1, buf, sizeof buf, key, 1), CRYPTO_OK);
+        CHECK_INT(xor_cipher(in, 1, buf, key, 1), CRYPTO_OK);
         CHECK_BYTES(buf, exp, 1);
     }
 
@@ -37,9 +37,9 @@ int main(void)
         const uint8_t zero[]  = { 0x00 };
         const uint8_t ff[]    = { 0xFF };
         const uint8_t flipped[] = { 0xFF, 0xED, 0x54, 0x00 };
-        CHECK_INT(xor_cipher(in, 4, buf, sizeof buf, zero, 1), CRYPTO_OK);
+        CHECK_INT(xor_cipher(in, 4, buf, zero, 1), CRYPTO_OK);
         CHECK_BYTES(buf, in, 4);
-        CHECK_INT(xor_cipher(in, 4, buf, sizeof buf, ff, 1), CRYPTO_OK);
+        CHECK_INT(xor_cipher(in, 4, buf, ff, 1), CRYPTO_OK);
         CHECK_BYTES(buf, flipped, 4);
     }
 
@@ -47,7 +47,7 @@ int main(void)
     {
         const uint8_t in[]    = { 'K', 'E', 'Y' };
         const uint8_t zeros[] = { 0, 0, 0 };
-        CHECK_INT(xor_cipher(in, 3, buf, sizeof buf, in, 3), CRYPTO_OK);
+        CHECK_INT(xor_cipher(in, 3, buf, in, 3), CRYPTO_OK);
         CHECK_BYTES(buf, zeros, 3);
     }
 
@@ -63,7 +63,7 @@ int main(void)
             0x2a,0x31,0x24,0x33,0x3a,0x65,0x3e,0x2b,0x20,0x27,0x63,0x0c,0x69,0x2b,0x20,0x28,
             0x31,0x65,0x28,0x63,0x26,0x30,0x2e,0x27,0x28,0x2f
         };
-        CHECK_INT(xor_cipher((const uint8_t *)plain, strlen(plain), buf, sizeof buf,
+        CHECK_INT(xor_cipher((const uint8_t *)plain, strlen(plain), buf,
                              (const uint8_t *)"ICE", 3), CRYPTO_OK);
         CHECK_BYTES(buf, expected, sizeof expected);
     }
@@ -72,8 +72,8 @@ int main(void)
     {
         const uint8_t in[]  = { 'H', 'i', 0x00, 0x7F, 0x80, 0xFF, '!' };   /* 0x00 in the middle */
         const uint8_t key[] = { 0xDE, 0xAD, 0xBE, 0xEF };
-        CHECK_INT(xor_cipher(in, sizeof in, buf, sizeof buf, key, sizeof key), CRYPTO_OK);
-        CHECK_INT(xor_cipher(buf, sizeof in, buf2, sizeof buf2, key, sizeof key), CRYPTO_OK);
+        CHECK_INT(xor_cipher(in, sizeof in, buf, key, sizeof key), CRYPTO_OK);
+        CHECK_INT(xor_cipher(buf, sizeof in, buf2, key, sizeof key), CRYPTO_OK);
         CHECK_BYTES(buf2, in, sizeof in);
     }
 
@@ -82,12 +82,12 @@ int main(void)
         uint8_t data[]      = { 0x10, 0x20, 0x30, 0x40, 0x50 };
         const uint8_t key[] = { 0x01, 0x02 };
         const uint8_t exp[] = { 0x11, 0x22, 0x31, 0x42, 0x51 };
-        CHECK_INT(xor_cipher(data, sizeof data, data, sizeof data, key, sizeof key), CRYPTO_OK);
+        CHECK_INT(xor_cipher(data, sizeof data, data, key, sizeof key), CRYPTO_OK);
         CHECK_BYTES(data, exp, sizeof exp);
     }
 
     TEST_SECTION("Empty input");
-    CHECK_INT(xor_cipher(buf2, 0, buf, sizeof buf, (const uint8_t *)"K", 1), CRYPTO_OK);
+    CHECK_INT(xor_cipher(buf2, 0, buf, (const uint8_t *)"K", 1), CRYPTO_OK);
 
     /* ------------------------------------------------------------ */
     printf("\n== otp_encrypt ==\n");
@@ -97,7 +97,7 @@ int main(void)
         const uint8_t in[]  = { 'O', 'T', 'P' };
         const uint8_t key[] = { 0x01, 0x02, 0x03 };
         const uint8_t exp[] = { 'O' ^ 0x01, 'T' ^ 0x02, 'P' ^ 0x03 };
-        CHECK_INT(otp_encrypt(in, 3, buf, sizeof buf, key, 3), CRYPTO_OK);
+        CHECK_INT(otp_encrypt(in, 3, buf, key, 3), CRYPTO_OK);
         CHECK_BYTES(buf, exp, 3);
     }
 
@@ -106,7 +106,7 @@ int main(void)
         const uint8_t in[]  = { 0xAA, 0xBB };
         const uint8_t key[] = { 0x0F, 0xF0, 0x99, 0x99 };
         const uint8_t exp[] = { 0xA5, 0x4B };
-        CHECK_INT(otp_encrypt(in, 2, buf, sizeof buf, key, 4), CRYPTO_OK);
+        CHECK_INT(otp_encrypt(in, 2, buf, key, 4), CRYPTO_OK);
         CHECK_BYTES(buf, exp, 2);
     }
 
@@ -122,17 +122,17 @@ int main(void)
         memset(p1_xor_p2, 0x55, sizeof p1_xor_p2);
         memset(recovered, 0xCC, sizeof recovered);
 
-        CHECK_INT(otp_encrypt((const uint8_t *)p1, 14, c1, sizeof c1, key, 14), CRYPTO_OK);
-        CHECK_INT(otp_encrypt((const uint8_t *)p2, 14, c2, sizeof c2, key, 14), CRYPTO_OK);
+        CHECK_INT(otp_encrypt((const uint8_t *)p1, 14, c1, key, 14), CRYPTO_OK);
+        CHECK_INT(otp_encrypt((const uint8_t *)p2, 14, c2, key, 14), CRYPTO_OK);
 
         /* c1 ^ c2 = (p1 ^ k) ^ (p2 ^ k) = p1 ^ p2 : the key cancels out! */
-        CHECK_INT(xor_cipher(c1, 14, c1_xor_c2, sizeof c1_xor_c2, c2, 14), CRYPTO_OK);
-        CHECK_INT(xor_cipher((const uint8_t *)p1, 14, p1_xor_p2, sizeof p1_xor_p2,
+        CHECK_INT(xor_cipher(c1, 14, c1_xor_c2, c2, 14), CRYPTO_OK);
+        CHECK_INT(xor_cipher((const uint8_t *)p1, 14, p1_xor_p2,
                              (const uint8_t *)p2, 14), CRYPTO_OK);
         CHECK_BYTES(c1_xor_c2, p1_xor_p2, 14);
 
         /* If the attacker guesses p1, they get p2 without ever knowing the key. */
-        CHECK_INT(xor_cipher(c1_xor_c2, 14, recovered, sizeof recovered,
+        CHECK_INT(xor_cipher(c1_xor_c2, 14, recovered,
                              (const uint8_t *)p1, 14), CRYPTO_OK);
         CHECK_BYTES(recovered, p2, 14);
     }
@@ -143,14 +143,14 @@ int main(void)
     TEST_SECTION("Basic encoding (lowercase)");
     {
         const uint8_t in[] = { 0x00, 0x0b, 0x7f, 0x80, 0xab, 0xff };
-        CHECK_INT(hex_encode(in, sizeof in, hex, sizeof hex), CRYPTO_OK);
+        CHECK_INT(hex_encode(in, sizeof in, hex), CRYPTO_OK);
         CHECK_STR(hex, "000b7f80abff");
-        CHECK_INT(hex_encode((const uint8_t *)"Hi!", 3, hex, sizeof hex), CRYPTO_OK);
+        CHECK_INT(hex_encode((const uint8_t *)"Hi!", 3, hex), CRYPTO_OK);
         CHECK_STR(hex, "486921");
     }
 
     TEST_SECTION("Empty input gives empty string");
-    CHECK_INT(hex_encode(buf2, 0, hex, sizeof hex), CRYPTO_OK);
+    CHECK_INT(hex_encode(buf2, 0, hex), CRYPTO_OK);
     CHECK_STR(hex, "");
 
     /* ------------------------------------------------------------ */
@@ -160,29 +160,29 @@ int main(void)
     {
         const uint8_t exp[] = { 0x00, 0x0b, 0x7f, 0x80, 0xab, 0xff };
         n = 999;
-        CHECK_INT(hex_decode("000b7f80abff", buf, sizeof buf, &n), CRYPTO_OK);
+        CHECK_INT(hex_decode("000b7f80abff", buf, &n), CRYPTO_OK);
         CHECK_INT(n, 6);
         CHECK_BYTES(buf, exp, 6);
         n = 999;
-        CHECK_INT(hex_decode("000B7F80ABFF", buf, sizeof buf, &n), CRYPTO_OK);
+        CHECK_INT(hex_decode("000B7F80ABFF", buf, &n), CRYPTO_OK);
         CHECK_INT(n, 6);
         CHECK_BYTES(buf, exp, 6);
-        CHECK_INT(hex_decode("aBcD", buf, sizeof buf, &n), CRYPTO_OK);
+        CHECK_INT(hex_decode("aBcD", buf, &n), CRYPTO_OK);
         CHECK_INT(n, 2);
         CHECK_BYTES(buf, "\xab\xcd", 2);
     }
 
     TEST_SECTION("Empty string gives 0 bytes");
     n = 999;
-    CHECK_INT(hex_decode("", buf, sizeof buf, &n), CRYPTO_OK);
+    CHECK_INT(hex_decode("", buf, &n), CRYPTO_OK);
     CHECK_INT(n, 0);
 
     TEST_SECTION("Round trip: bytes -> hex -> bytes");
     {
         uint8_t all[256];
         for (int i = 0; i < 256; i++) all[i] = (uint8_t)i;
-        CHECK_INT(hex_encode(all, 256, hex, sizeof hex), CRYPTO_OK);
-        CHECK_INT(hex_decode(hex, buf, sizeof buf, &n), CRYPTO_OK);
+        CHECK_INT(hex_encode(all, 256, hex), CRYPTO_OK);
+        CHECK_INT(hex_decode(hex, buf, &n), CRYPTO_OK);
         CHECK_INT(n, 256);
         CHECK_BYTES(buf, all, 256);
     }

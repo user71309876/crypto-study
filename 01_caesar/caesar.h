@@ -12,7 +12,6 @@
  *
  *   in       : NUL-terminated plaintext string
  *   out      : buffer for the result (the tests always pass one that is big enough)
- *   out_size : size of the out buffer in bytes
  *   key      : shift amount. Negative, 0, and 26 or more are allowed
  *              (e.g. 29 is the same as 3)
  *
@@ -24,12 +23,12 @@
  * Returns CRYPTO_OK.
  * (Error handling is optional: the tests only check correct results.)
  */
-int caesar_encrypt(const char *in, char *out, size_t out_size, int key);
+int caesar_encrypt(const char *in, char *out, int key);
 
 /*
  * Decrypt the ciphertext `in` with `key` and write the plaintext to `out`.
  * Same arguments and rules as caesar_encrypt.
  */
-int caesar_decrypt(const char *in, char *out, size_t out_size, int key);
+int caesar_decrypt(const char *in, char *out, int key);
 
 #endif /* CAESAR_H */

@@ -21,10 +21,8 @@ static char shift_char(char c, int key)
     return c;
 }
 
-static int vigenere_run(const char *in, char *out, size_t out_size, const char *key, bool decrypt)
+static int vigenere_run(const char *in, char *out, const char *key, bool decrypt)
 {
-    (void)out_size; /* not used: error handling is optional */
-
     size_t key_len = strlen(key);
     size_t in_len = strlen(in);
 
@@ -48,12 +46,12 @@ static int vigenere_run(const char *in, char *out, size_t out_size, const char *
     return CRYPTO_OK;
 }
 
-int vigenere_encrypt(const char *in, char *out, size_t out_size, const char *key)
+int vigenere_encrypt(const char *in, char *out, const char *key)
 {
-    return vigenere_run(in, out, out_size, key, false);
+    return vigenere_run(in, out, key, false);
 }
 
-int vigenere_decrypt(const char *in, char *out, size_t out_size, const char *key)
+int vigenere_decrypt(const char *in, char *out, const char *key)
 {
-    return vigenere_run(in, out, out_size, key, true);
+    return vigenere_run(in, out, key, true);
 }
