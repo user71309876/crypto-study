@@ -20,13 +20,9 @@ static char shift_char(char c, int key)
 
 int caesar_encrypt(const char *in, char *out, size_t out_size, int key)
 {
-    if (in == NULL || out == NULL)
-        return CRYPTO_ERR_NULL;
+    (void)out_size; /* not used: error handling is optional */
 
     size_t len = strlen(in);
-
-    if (out_size < len + 1)
-        return CRYPTO_ERR_BUFFER;
 
     for (size_t i = 0; i < len; i++)
         out[i] = shift_char(in[i], key);

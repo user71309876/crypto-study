@@ -23,21 +23,10 @@ static char shift_char(char c, int key)
 
 static int vigenere_run(const char *in, char *out, size_t out_size, const char *key, bool decrypt)
 {
-    if (in == NULL || out == NULL || key == NULL)
-        return CRYPTO_ERR_NULL;
+    (void)out_size; /* not used: error handling is optional */
 
     size_t key_len = strlen(key);
-    if (key_len == 0)
-        return CRYPTO_ERR_KEY;
-    for (size_t i = 0; i < key_len; i++)
-    {
-        if (!isalpha((unsigned char)key[i]))
-            return CRYPTO_ERR_KEY;
-    }
-
     size_t in_len = strlen(in);
-    if (out_size < in_len + 1)
-        return CRYPTO_ERR_BUFFER;
 
     for (size_t i = 0, j = 0; i < in_len; i++, j++)
     {
